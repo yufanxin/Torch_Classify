@@ -98,7 +98,7 @@
 cd apex-master
 pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
 ```
-注意语句最后的点也要复制训练
+注意语句最后的点也要复制
 
 # 训练
 
