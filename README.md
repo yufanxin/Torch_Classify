@@ -83,20 +83,22 @@
 ### 配置cl.exe
 
 ​	C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30037\bin\Hostx86\x64
-
 	注意是vs2019  中间版本号可能不同 但是一定要Hostx86/x64的cl.exe
 	把cl.exe路径添加到系统环境变量并移至最上层 cuda10.2高于10.1.10.0
+​	在cmd中输入
 	
-	cmd set Path=C
-	cmd cl查看
-
+	
+	set Path=C
+	cl
+​	显示cl的版本号就无问题了。如19.14.29.30037
 ### 安装apex
 
 注意该步骤在Anaconda的**PowerSheel**中进行
-
-​	cd apex-master
-​	pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
-​	#注意语句最后的点也要复制训练
+```
+cd apex-master
+pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
+```
+注意语句最后的点也要复制训练
 
 # 训练
 
