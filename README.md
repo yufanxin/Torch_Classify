@@ -119,12 +119,9 @@ model_suffix='0.5'
 
 训练完成之后在你的log_dir中查看训练过程。
 
-<center class="half">
-    <img src=".\logs\shufflenetv2_0.5\P-R-F1-per-class.jpg" height="320"/>
-    <img src=".\logs\shufflenetv2_0.5\P-R-F1.jpg" height="320"/>
-</center>
-
-<img src=".\logs\shufflenetv2_0.5\data_distribution.jpg" alt="data_distribution" style="width:50%; height:50%" />
+<img src=".\logs\shufflenetv2_0.5\P-R-F1-per-class.jpg" width="700"/>
+<img src=".\logs\shufflenetv2_0.5\P-R-F1.jpg" width="700"/>
+<img src=".\logs\shufflenetv2_0.5\data_distribution.jpg" width="700" />
 
 # 预测
 
