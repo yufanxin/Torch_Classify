@@ -102,6 +102,8 @@
 
 在config.py中修改你想要的模型配置，注意，我的代码中，**每个模型有2部分组成**，分别是model_prefix和model_suffix。
 
+为了方便大家，我写了关于参数用途的注释。
+
 例如
 
 ```
@@ -130,12 +132,9 @@ model_suffix='0.5'
 
 # 模型权重
 
-* 我对torch的官方权重或者是原论文作者放出的权重进行了收集，并且按照名字能够加载进模型，所以应该不存在模型出错的问题，如果有，请及时通知我。并且在每一个model.py中注明了权重链接。
+* 我对torch的官方权重或者是原论文作者放出的权重进行了收集，所以应该不存在模型出错的问题，如果有，请及时通知我。并且在每一个model.py中注明了权重链接。但注意，因为本人能力有限，仍有部分模型的权重搜集不到，如果你有相关的权重链接，请通知我！
 
-* 请注意，直接下载官方的权重是无法导入的，因为我做了特殊处理，其中的步骤是删除了分类层的dict。
-
-* 因此请下载我提供给大家的权重，这些权重都是我删除了分类层的，可以直接load。
-
+* 请注意，你可以直接下载官方的权重，但是无法导入的，因为分类层并不是1000的类别，因此你可以手动删除分类层的dict，也可以下载我提供给大家处理好的权重的下载链接，这些权重都是我删除了分类层的，可以直接load。
   * densenet                      链接：https://pan.baidu.com/s/1k9TsOiulPjiXZ7McpWhd2g      提取码：BDAS 
   * efficientnetv1              链接：https://pan.baidu.com/s/1ep8_Shcpe7kLv0-uCsMLDg     提取码：BDAS 
   * efficientnetv2              链接：https://pan.baidu.com/s/1Xljq-geOAbbq0_DCFyxO7A     提取码：BDAS 
@@ -149,14 +148,18 @@ model_suffix='0.5'
   * xception                      链接：https://pan.baidu.com/s/1zuVklTdRGsP9NxRstQBHvg      提取码：BDAS
   * vit                                 链接：https://pan.baidu.com/s/1NoYncqTWHNYdz3kpVuUy0w  提取码：BDAS 
 
+
 # 参考
 
-https://github.com/pytorch/vision/tree/master/torchvision/models
-https://github.com/WZMIAOMIAO/deep-learning-for-image-processing/tree/master/pytorch_classification
-https://github.com/rwightman/pytorch-image-models/tree/master/timm/models
+1. https://github.com/pytorch/vision/tree/master/torchvision/models
+
+2. https://github.com/WZMIAOMIAO/deep-learning-for-image-processing/tree/master/pytorch_classification
+
+3. https://github.com/rwightman/pytorch-image-models/tree/master/timm/models
+
 
 # 联系方式
 
-QQ：2267330597
-E-mail：201902098@stu.sicau.edu.cn
+1. QQ：2267330597
+2. E-mail：201902098@stu.sicau.edu.cn
 
