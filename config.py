@@ -34,9 +34,9 @@ import torch
 
 configurations = {
     'cfg': dict(
-        load_from=r"weights\shufflenetv2\shufflenetv2_x0.5.pth",  # pretrain weight of imagenet
-        model_prefix='shufflenetv2',  # above model_prefix
-        model_suffix='0.5',  # above model_suffix
+        load_from=r"D:\torch_classify\weights\mobilenetv2\mobilenet_v2.pth",  # pretrain weight of imagenet
+        model_prefix='mobilenetv2',  # above model_prefix
+        model_suffix='1.0',  # above model_suffix
         img_path='data',  # the parent root where your train/val data are stored, not support test data
                           # -data
                           #    -train
@@ -52,22 +52,22 @@ configurations = {
         log_root='logs',  # the root to log your train/val status
         mean=[0.485, 0.456, 0.406],  # [0.485, 0.456, 0.406] if use pretrain weight of imagenet else [0.5, 0.5, 0.5]
         std=[0.229, 0.224, 0.225],  # [0.229, 0.224, 0.225] if use pretrain weight of imagenet else [0.5, 0.5, 0.5]
-        img_size=[224, 224],  # especially for efficientnetv1 b0->224, b1->240, b2->260, b3->300, b4->380, b5->456, b6->528, b7->600
+        img_size=[112, 112],  # especially for efficientnetv1 b0->224, b1->240, b2->260, b3->300, b4->380, b5->456, b6->528, b7->600
                               # especially for xception 299
-        num_classes=5,
-        batch_size=32,
-        epochs=300,
-        device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),  #  now only support single gpu
+        num_classes=10,
+        batch_size=64,
+        epochs=200,
+        device="cuda:0",  #  now only support single gpu or cpu, ['cuda:0', 'cpu']
         num_workers=0,  # 0 if run on windows else depend on cpu
         init_lr=0.01,
-        warmup_epochs=5,  # linear warm up 5 epoch
+        warmup_epochs=0,  # linear warm up 5 epoch
         scheduler_type='warmup_cosine_lr',  # support: ['warmup_cosine_lr', 'warmup_step_lr']
-        steps=[150, 230, 270],  # use steps if scheduler_type=='warmup_step_lr' else ignore, default mutiply 0.1 when epoch == step
+        steps=[100, 150, 180],  # use steps if scheduler_type=='warmup_step_lr' else ignore, default mutiply 0.1 when epoch == step
         lr_scale=0.01,  # use lr_scale if scheduler_type=='warmup_cosine_lr' else ignore, cosine_lr: init_lr -> init_lr*lr_scale
         drop_last=False,  # whether drop the last batch to ensure consistent batch_norm statistics
         pin_memory=True,  # True if you memory big enough else False
         optimizer_type='sgd',  # support: ['sgd', 'adam', 'adamw', 'rmsprop']
         loss_type='CELoss',  # support: ['CELoss', 'LabelSmoothCELoss'] smoothing default=0.1
-        use_apex=False  # use apex to train by mixed-precision
+        use_apex=True  # use apex to train by mixed-precision
     ),
 }

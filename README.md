@@ -10,12 +10,14 @@
 
 ## 目前
 
-1. 目前支持：学习率预热+余弦退火、学习率预热+阶梯式下降。
-2. 目前支持：apex混合精度训练。
-3. 目前支持：CELoss与LabelSmoothCELoss。
-4. 目前支持：4种优化器：sgd, adam, adamw, rmsprop 。
+#### 2021.7.26  
 
-因为模块化，所以你可以在utils中的文件添加你所想要的工具。
+优化logs文件夹，记录每次exp的config，添加requirements.txt并纠正环境配置，修复了warmup_epoch=0的BUG
+更新了tools中转换权重、计算模型参数、模型FPS、模型吞吐量的工具
+
+#### 2021.7.25
+
+first commit
 
 # 支持模型
 
@@ -73,29 +75,33 @@
 ## 环境配置
 
 * Anaconda3
-* python3.6/3.7/3.8
+* python 3.8
 * pycharm (IDE， 建议使用)
-* pytorch 1.7.1 (pip package)
+* pytorch 1.8.1
 * apex 0.1.0
 * VS2019
 * Cuda10.2
 
 ### 配置cl.exe
 
-​	C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30037\bin\Hostx86\x64
-	注意是vs2019  中间版本号可能不同 但是一定要Hostx86/x64的cl.exe
-	把cl.exe路径添加到系统环境变量并移至最上层 cuda10.2高于10.1.10.0
-​	在cmd中输入
-	
-	
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30037\bin\Hostx86\x64
+
+注意是vs2019  中间版本号可能不同 但是一定要Hostx86/x64的cl.exe
+
+把cl.exe路径添加到系统环境变量并移至最上层         cuda10.2的path高于10.1.10.0
+
+在cmd中输入
+
 	set Path=C
 	cl
-​	显示cl的版本号就无问题了。如19.14.29.30037
+显示cl的版本号就无问题了。如19.14.29.30037
+
 ### 安装apex
 
 注意该步骤在Anaconda的**PowerSheel**中进行
 ```
 cd apex-master
+pip install -r requirements.txt
 pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
 ```
 注意语句最后的点也要复制
@@ -161,4 +167,3 @@ model_suffix='0.5'
 
 1. QQ：2267330597
 2. E-mail：201902098@stu.sicau.edu.cn
-

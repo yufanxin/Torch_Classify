@@ -14,6 +14,7 @@ from utils.scheduler import get_lr, create_scheduler
 from utils.optimizer import create_optimizer
 from utils.plots import plot_datasets, plot_txt, plot_lr_scheduler
 from utils.loss import create_loss
+from utils.general import create_config, increment_path
 from config import configurations
 import numpy as np
 
@@ -27,7 +28,7 @@ num_classes = cfg['num_classes']
 batch_size = cfg['batch_size']
 epochs = cfg['epochs']
 nw = cfg['num_workers']
-device = cfg['device']
+device = torch.device(cfg['device'])
 scheduler_type = cfg['scheduler_type']
 model_prefix = cfg['model_prefix']
 model_suffix = cfg['model_suffix']
@@ -42,13 +43,14 @@ warmup_epochs = cfg['warmup_epochs']
 loss_type = cfg['loss_type']
 use_apex = cfg['use_apex']
 model_name = model_prefix + '_' + model_suffix
-log_dir = os.path.join(log_root, model_name)
+log_dir = increment_path(os.path.join(log_root, model_name, 'exp'))
 os.makedirs(log_dir, exist_ok=True)
 plot_datasets(img_path, log_dir)
 results_file = os.path.join(log_dir, 'results.txt')
 train_root = os.path.join(img_path, "train")
 val_root = os.path.join(img_path, "val")
 tb_writer = SummaryWriter(log_dir=log_dir)
+create_config(log_dir)
 
 print('[INFO] Using Model:{} Epoch:{} BatchSize:{} LossType:{} '
       'OptimizerType:{} SchedulerType:{}...'.format(model_name, epochs, batch_size,
@@ -110,6 +112,7 @@ optimizer = create_optimizer(optimizer_type, net, init_lr)
 if use_apex:
     from apex import amp
     net, optimizer = amp.initialize(net, optimizer, opt_level='O1')
+    print('[INFO] Using Mixed-precision to train...')
 scheduler = create_scheduler(scheduler_type, optimizer, epochs, lr_scale, steps, warmup_epochs)
 plot_lr_scheduler(optimizer, scheduler, epochs, log_dir, scheduler_type)
 best_acc = 0.0
