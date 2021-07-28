@@ -2,7 +2,7 @@ import os
 
 import torch
 
-weight_dir = r"D:\torch_classify\weights\jx_vit_large_patch32_224_in21k-9046d2e7.pth"
+weight_dir = r"D:\Torch_Classify\weights\\densenet121.pth"
 # 查看旧名
 dict = torch.load(weight_dir)
 # print(dict)
@@ -17,11 +17,11 @@ for name in old_names:
 #     dict['backbone.model.'+old_name] = dict.pop(old_name)
 
 # 删除参数
-for key in list(dict.keys()):
-    # if 'fc' in key: # classifier fc
-    if key in ['pre_logits.fc.weight', 'pre_logits.fc.bias', 'head.weight', 'head.bias']:
-        del dict[key]
-torch.save(dict, r"../weights\vit/jx_vit_large_patch32_224_in21k.pth")
+# for key in list(dict.keys()):
+#     # if 'fc' in key: # classifier fc
+#     if key in ['pre_logits.fc.weight', 'pre_logits.fc.bias', 'head.weight', 'head.bias']:
+#         del dict[key]
+# torch.save(dict, r"../weights\vit/jx_vit_large_patch32_224_in21k.pth")
 
 
 

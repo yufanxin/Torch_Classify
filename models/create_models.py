@@ -12,11 +12,17 @@ from .ViT import vit_base_patch16_224_in21k, vit_base_patch32_224_in21k, vit_hug
     vit_large_patch16_224_in21k, vit_large_patch32_224_in21k
 from .GhostNet import ghostnet_0_5, ghostnet_1_0, ghostnet_1_3
 from .Xception import xception
+from .ResMlp_mixer import resmlp_12, resmlp_24, resmlp_36, resmlpB_24
+from .VoVNet import vovnet39, vovnet57, vovnet27_slim
+from .Se_ResNet import se_resnet18, se_resnet34, se_resnet50, se_resnet101, se_resnet152
+from .SqueezeNet import squeezenet1_0, squeezenet1_1
+from .MnasNet import mnasnet0_5, mnasnet1_0, mnasnet0_75, mnasnet1_3
 
 def create_model(model_name, num_classes):
     model_prefix = model_name.split('_')[0]
-    model_suffix = model_name.split('_')[-1].split('bn')[-1]
+    model_suffix = model_name.split('_')[-1]
     if model_prefix == 'vgg':
+        model_suffix = model_name.split('_')[-1].split('bn')[-1]
         batch_norm = False
         if 'bn' in model_name:
             batch_norm = True
@@ -182,12 +188,79 @@ def create_model(model_name, num_classes):
         else:
             raise ValueError('[INFO] Unsupported model_suffix - `{}`, '
                              'Use 299'.format(model_suffix))
+    # elif model_prefix == 'ffrnet':
+    #     if model_suffix == '1.0':
+    #         model = ffrnet(num_classes=num_classes)
+    #     else:
+    #         raise ValueError('[INFO] Unsupported model_suffix - `{}`, '
+    #                          'Use 1.0'.format(model_suffix))
 
+    elif model_prefix == 'resmlp-mixer':
+        if model_suffix == '12':
+            model = resmlp_12(num_classes=num_classes)
+        elif model_suffix == '24':
+            model = resmlp_24(num_classes=num_classes)
+        elif model_suffix == '36':
+            model = resmlp_36(num_classes=num_classes)
+        elif model_suffix == 'B24':
+            model = resmlpB_24(num_classes=num_classes)
+        else:
+            raise ValueError('[INFO] Unsupported model_suffix - `{}`, '
+                             'Use 12, 24, 36, B24'.format(model_suffix))
+
+    elif model_prefix == 'vovnet':
+        if model_suffix == '27slim':
+            model = vovnet27_slim(num_classes=num_classes)
+        elif model_suffix == '39':
+            model = vovnet39(num_classes=num_classes)
+        elif model_suffix == '57':
+            model = vovnet57(num_classes=num_classes)
+        else:
+            raise ValueError('[INFO] Unsupported model_suffix - `{}`, '
+                             'Use 27slim, 39, 57'.format(model_suffix))
+
+    elif model_prefix == 'se-resnet':
+        if model_suffix == '18':
+            model = se_resnet18(num_classes=num_classes)
+        elif model_suffix == '34':
+            model = se_resnet34(num_classes=num_classes)
+        elif model_suffix == '50':
+            model = se_resnet50(num_classes=num_classes)
+        elif model_suffix == '101':
+            model = se_resnet101(num_classes=num_classes)
+        elif model_suffix == '152':
+            model = se_resnet152(num_classes=num_classes)
+        else:
+            raise ValueError('[INFO] Unsupported model_suffix - `{}`, '
+                             'Use 18, 34, 50, 101, 152'.format(model_suffix))
+
+    elif model_prefix == 'squeezenet':
+        if model_suffix == '1.0':
+            model = squeezenet1_0(num_classes=num_classes)
+        elif model_suffix == '1.1':
+            model = squeezenet1_1(num_classes=num_classes)
+        else:
+            raise ValueError('[INFO] Unsupported model_suffix - `{}`, '
+                             'Use 1.0 1.1'.format(model_suffix))
+
+    elif model_prefix == 'mnasnet':
+        if model_suffix == '0.5':
+            model = mnasnet0_5(num_classes=num_classes)
+        elif model_suffix == '0.75':
+            model = mnasnet0_75(num_classes=num_classes)
+        elif model_suffix == '1.0':
+            model = mnasnet1_0(num_classes=num_classes)
+        elif model_suffix == '1.3':
+            model = mnasnet1_3(num_classes=num_classes)
+        else:
+            raise ValueError('[INFO] Unsupported model_suffix - `{}`, '
+                             'Use 0.5 0.75 1.0 1.3'.format(model_suffix))
     else:
         raise ValueError('[INFO] Unsupported model_prefix - `{}`, '
                          'Use vgg, resnet, regnetx, regnety, '
-                         'mobilenetv1, mobilenetv2, mobilenetv3, '
+                         'mobilenetv2, mobilenetv3, '
                          'efficientnetv1, efficientnetv2, '
                          'shufflenetv2, densenet, goolenet, '
-                         'vit, ghostnet'.format(model_prefix))
+                         'vit, ghostnet, resmlp_mixer, mnasnet'
+                         'vovnet, se-resnet, squeezenet'.format(model_prefix))
     return model

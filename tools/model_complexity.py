@@ -11,7 +11,7 @@ model_name = model_prefix + '_' + model_suffix
 optimal_batch_size = cfg['batch_size']
 # create model
 model = create_model(model_name=model_name, num_classes=num_classes)
-
+print(model.state_dict().keys())
 # option1
 # from torchstat import stat
 # stat(model, (3, img_size[0], img_size[1]))

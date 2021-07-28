@@ -4,7 +4,7 @@ import torch.optim as optim
 
 def create_optimizer(optimizer_type, net, init_lr):
     if optimizer_type == 'sgd':
-        return optim.SGD(net.parameters(), lr=init_lr, momentum=0.9, weight_decay=5e-4, nesterov=True)
+        return optim.SGD(net.parameters(), lr=init_lr, momentum=0.9, weight_decay=0, nesterov=True)
     elif optimizer_type == 'adam':
         return optim.Adam(net.parameters(), lr=init_lr, betas=(0.9, 0.999), eps=1e-08, weight_decay=0, amsgrad=True)
     elif optimizer_type == 'adamw':

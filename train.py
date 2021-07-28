@@ -1,4 +1,5 @@
 import json
+import time
 
 from models.create_models import create_model
 import torch
@@ -14,7 +15,7 @@ from utils.scheduler import get_lr, create_scheduler
 from utils.optimizer import create_optimizer
 from utils.plots import plot_datasets, plot_txt, plot_lr_scheduler
 from utils.loss import create_loss
-from utils.general import create_config, increment_path
+from utils.general import create_config, increment_path, load_weight
 from config import configurations
 import numpy as np
 
@@ -27,8 +28,9 @@ img_size = cfg['img_size']
 num_classes = cfg['num_classes']
 batch_size = cfg['batch_size']
 epochs = cfg['epochs']
-nw = cfg['num_workers']
+num_workers = cfg['num_workers']
 device = torch.device(cfg['device'])
+use_benchmark = cfg['use_benchmark']
 scheduler_type = cfg['scheduler_type']
 model_prefix = cfg['model_prefix']
 model_suffix = cfg['model_suffix']
@@ -51,10 +53,11 @@ train_root = os.path.join(img_path, "train")
 val_root = os.path.join(img_path, "val")
 tb_writer = SummaryWriter(log_dir=log_dir)
 create_config(log_dir)
-
+if use_benchmark:
+    torch.backends.cudnn.benchmark = True
 print('[INFO] Using Model:{} Epoch:{} BatchSize:{} LossType:{} '
       'OptimizerType:{} SchedulerType:{}...'.format(model_name, epochs, batch_size,
-                                                 loss_type, optimizer_type, scheduler_type))
+                                                    loss_type, optimizer_type, scheduler_type))
 print('[INFO] Logs will be saved in {}...'.format(log_dir))
 
 class_index = ' '.join([str(i) for i in np.arange(num_classes)])
@@ -77,14 +80,14 @@ train_num = len(train_dataset)
 train_loader = torch.utils.data.DataLoader(train_dataset,
                                            batch_size=batch_size, drop_last=drop_last,
                                            shuffle=True, pin_memory=pin_memory,
-                                           num_workers=nw)
+                                           num_workers=num_workers)
 
 validate_dataset = datasets.ImageFolder(root=val_root, transform=data_transform["val"])
 val_num = len(validate_dataset)
 validate_loader = torch.utils.data.DataLoader(validate_dataset,
                                               batch_size=batch_size, drop_last=drop_last,
                                               shuffle=False, pin_memory=pin_memory,
-                                              num_workers=nw)
+                                              num_workers=num_workers)
 print('[INFO] Load Image From {}...'.format(img_path))
 
 # write dict into json file
@@ -94,17 +97,15 @@ json_str = json.dumps(cla_dict, indent=4)
 with open(os.path.join(log_dir, 'class_indices.json'), 'w') as json_file:
     json_file.write(json_str)
 labels_name = list(cla_dict.values())
+if len(labels_name) != num_classes:
+    raise ValueError('[INFO] Find {} classes but configs show {} num_classes'.format(len(labels_name), num_classes))
 
 print('[INFO] {} to train, {} to val, total {} classes...'.format(train_num, val_num, num_classes))
 net = create_model(model_name=model_name, num_classes=num_classes).to(device)
 
 if load_from != "":
     print('[INFO] Load Weight From {}...'.format(load_from))
-    if os.path.exists(load_from):
-        load_weights_dict = {k: v for k, v in torch.load(load_from).items() if net.state_dict()[k].numel() == v.numel()}
-        net.load_state_dict(load_weights_dict, strict=False)
-    else:
-        raise FileNotFoundError("[INFO] not found weights file: {}...".format(load_from))
+    net = load_weight(net, load_from)
 print('[INFO] Successfully Load Weight From {}...'.format(load_from))
 loss_function = create_loss(loss_type)
 
@@ -172,8 +173,6 @@ for epoch in range(epochs):
     if confusion.mean_val_accuracy > best_acc:
         best_acc = confusion.mean_val_accuracy
         torch.save(net.state_dict(), log_dir + '/best.pth')
-
-
 
 torch.save(net.state_dict(), log_dir + '/last.pth')
 plot_txt(log_dir, num_classes, labels_name)

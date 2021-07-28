@@ -20,7 +20,7 @@ starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_t
 repetitions = 1000
 timings = np.zeros((repetitions, 1))
 # GPU-WARM-UP
-for _ in range(100):
+for _ in range(200):
     _ = model(dummy_input)
 # MEASURE PERFORMANCE
 with torch.no_grad():

@@ -1,4 +1,3 @@
-import torch
 
 #  --------------------------------------------------------------------------------------
 # |model_prefix    |model_suffix                                                         |
@@ -31,11 +30,21 @@ import torch
 # |--------------------------------------------------------------------------------------|
 # |vit             |base-patch16 base-patch32 large-patch16 large-patch32 huge-patch14   |
 #  --------------------------------------------------------------------------------------
+# |resmlp-mixer    |12 24 36 B24                                                         |
+#  --------------------------------------------------------------------------------------
+# |vovnet          |27slim 39 57                                                         |
+#  --------------------------------------------------------------------------------------
+# |se-resnet       |18 34 50 101 152                                                     |
+#  --------------------------------------------------------------------------------------
+# |squeezenet      |1.0 1.1                                                              |
+#  --------------------------------------------------------------------------------------
+# |mnasnet         |0.5 0.75 1.0 1.3                                                     |
+#  --------------------------------------------------------------------------------------
 
 configurations = {
     'cfg': dict(
-        load_from=r"D:\torch_classify\weights\mobilenetv2\mobilenet_v2.pth",  # pretrain weight of imagenet
-        model_prefix='mobilenetv2',  # above model_prefix
+        load_from=r"weights\mnasnet_weights\mnasnet1.0_top1_73.512-f206786ef8.pth",  # pretrain weight of imagenet
+        model_prefix='mnasnet',  # above model_prefix
         model_suffix='1.0',  # above model_suffix
         img_path='data',  # the parent root where your train/val data are stored, not support test data
                           # -data
@@ -52,22 +61,23 @@ configurations = {
         log_root='logs',  # the root to log your train/val status
         mean=[0.485, 0.456, 0.406],  # [0.485, 0.456, 0.406] if use pretrain weight of imagenet else [0.5, 0.5, 0.5]
         std=[0.229, 0.224, 0.225],  # [0.229, 0.224, 0.225] if use pretrain weight of imagenet else [0.5, 0.5, 0.5]
-        img_size=[112, 112],  # especially for efficientnetv1 b0->224, b1->240, b2->260, b3->300, b4->380, b5->456, b6->528, b7->600
+        img_size=[224, 224],  # especially for efficientnetv1 b0->224, b1->240, b2->260, b3->300, b4->380, b5->456, b6->528, b7->600
                               # especially for xception 299
         num_classes=10,
         batch_size=64,
         epochs=200,
         device="cuda:0",  #  now only support single gpu or cpu, ['cuda:0', 'cpu']
+        use_benchmark=False,  # use to speed up if your img_size doesn't change dynamically
         num_workers=0,  # 0 if run on windows else depend on cpu
         init_lr=0.01,
-        warmup_epochs=0,  # linear warm up 5 epoch
-        scheduler_type='warmup_cosine_lr',  # support: ['warmup_cosine_lr', 'warmup_step_lr']
+        warmup_epochs=5,  # linear warm up 5 epoch
+        scheduler_type='warmup_step_lr',  # support: ['warmup_cosine_lr', 'warmup_step_lr'] more details in utils/scheduler.py
         steps=[100, 150, 180],  # use steps if scheduler_type=='warmup_step_lr' else ignore, default mutiply 0.1 when epoch == step
         lr_scale=0.01,  # use lr_scale if scheduler_type=='warmup_cosine_lr' else ignore, cosine_lr: init_lr -> init_lr*lr_scale
         drop_last=False,  # whether drop the last batch to ensure consistent batch_norm statistics
         pin_memory=True,  # True if you memory big enough else False
-        optimizer_type='sgd',  # support: ['sgd', 'adam', 'adamw', 'rmsprop']
-        loss_type='CELoss',  # support: ['CELoss', 'LabelSmoothCELoss'] smoothing default=0.1
-        use_apex=True  # use apex to train by mixed-precision
+        optimizer_type='sgd',  # support: ['sgd', 'adam', 'adamw', 'rmsprop'] more details in utils/optimizer.py
+        loss_type='CELoss',  # support: ['CELoss', 'LabelSmoothCELoss'] more details in utils/loss.py
+        use_apex=False  # use apex to train by mixed-precision
     ),
 }

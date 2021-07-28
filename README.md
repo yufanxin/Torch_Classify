@@ -2,7 +2,7 @@
 
 ## 前言
 
-起因：因为我看github上面很多其他计算机视觉任务的集成，都写得很好了，但是分类这块，一直没找到我想要的那种清楚点的，每次要用的时候都很烦，索性自己花一天整理了一个符合自己需求的。以后也会陆续添加模型。
+起因：因为我看github上面很多其他计算机视觉任务的集成，都写得很好了，但是分类这块，一直没找到我想要的那种清楚点的，每次要用的时候都很烦，索性自己整理了一个符合自己需求的。以后也会陆续添加模型。
 
 * 本教程是对本人本科生期间的研究内容进行整理总结，总结的同时也希望能够帮助更多的小伙伴。后期如果有学习到新的知识也会与大家一起分享。
 * 本教程使用Pytorch进行网络的搭建与训练。
@@ -10,14 +10,18 @@
 
 ## 目前
 
-#### 2021.7.26  
+#### 2021. 7.28
 
-优化logs文件夹，记录每次exp的config，添加requirements.txt并纠正环境配置，修复了warmup_epoch=0的BUG
-更新了tools中转换权重、计算模型参数、模型FPS、模型吞吐量的工具
+* 增加了ResMlp-Mixer VoVNet se-resnet SqueezeNet MnasNet模型
+* 优化了logs文件夹，记录每次exp的config，添加requirements.txt并纠正环境配置
+* 修复了warmup_epoch=0的BUG
+* 更新了tools中转换权重、计算模型参数、模型FPS、模型吞吐量的工具
+* 更新了权重加载方式和权重链接
 
 #### 2021.7.25
 
-first commit
+- first commit
+
 
 # 支持模型
 
@@ -52,6 +56,16 @@ first commit
 # |xception        |299                                                                  |
 # |--------------------------------------------------------------------------------------|
 # |vit             |base-patch16 base-patch32 large-patch16 large-patch32 huge-patch14   |
+#  --------------------------------------------------------------------------------------
+# |resmlp-mixer    |12 24 36 B24                                                         |
+#  --------------------------------------------------------------------------------------
+# |vovnet          |27slim 39 57                                                         |
+#  --------------------------------------------------------------------------------------
+# |se-resnet       |18 34 50 101 152                                                     |
+#  --------------------------------------------------------------------------------------
+# |squeezenet      |1.0 1.1                                                              |
+#  --------------------------------------------------------------------------------------
+# |mnasnet         |0.5 0.75 1.0 1.3                                                     |
 #  --------------------------------------------------------------------------------------
 ```
 
@@ -96,6 +110,8 @@ C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.2
 	cl
 显示cl的版本号就无问题了。如19.14.29.30037
 
+在我的mmsegmentation环境安装教程中有对cl.exe配置的片段。https://www.bilibili.com/video/BV1NB4y1N7Qo
+
 ### 安装apex
 
 注意该步骤在Anaconda的**PowerSheel**中进行
@@ -105,6 +121,8 @@ pip install -r requirements.txt
 pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" .
 ```
 注意语句最后的点也要复制
+
+在我的yolox环境安装教程中有对cl.exe配置的片段。https://www.bilibili.com/video/BV1Gf4y157u8
 
 # 训练
 
@@ -125,9 +143,9 @@ model_suffix='0.5'
 
 训练完成之后在你的log_dir中查看训练过程。
 
-<img src=".\logs\shufflenetv2_0.5\exp1\P-R-F1-per-class.jpg" width="700"/>
-<img src=".\logs\shufflenetv2_0.5\exp1\P-R-F1.jpg" width="700"/>
-<img src=".\logs\shufflenetv2_0.5\exp1\data_distribution.jpg" width="700" />
+<img src=".\logs\mobilenetv3_small\exp0\P-R-F1-per-class.jpg" width="700"/>
+<img src=".\logs\mobilenetv3_small\exp0\P-R-F1.jpg" width="700"/>
+<img src=".\logs\mobilenetv3_small\exp0\data_distribution.jpg" width="700" />
 
 # 预测
 
@@ -139,19 +157,27 @@ model_suffix='0.5'
 
 * 我对torch的官方权重或者是原论文作者放出的权重进行了收集，所以应该不存在模型出错的问题，如果有，请及时通知我。并且在每一个model.py中注明了权重链接。但注意，因为本人能力有限，仍有部分模型的权重搜集不到，如果你有相关的权重链接，请通知我！
 
-* 请注意，你可以直接下载官方的权重，但是无法导入的，因为分类层并不是1000的类别，因此你可以手动删除分类层的dict，也可以下载我提供给大家处理好的权重的下载链接，这些权重都是我删除了分类层的，可以直接load。
-  * densenet                      链接：https://pan.baidu.com/s/1k9TsOiulPjiXZ7McpWhd2g      提取码：BDAS 
-  * efficientnetv1              链接：https://pan.baidu.com/s/1ep8_Shcpe7kLv0-uCsMLDg     提取码：BDAS 
-  * efficientnetv2              链接：https://pan.baidu.com/s/1Xljq-geOAbbq0_DCFyxO7A     提取码：BDAS 
-  * mobilenetv2                链接：https://pan.baidu.com/s/1iH2ksUOItaPXKdlN-M0L0Q     提取码：BDAS 
-  * mobilenetv3                链接：https://pan.baidu.com/s/1cnarcoPSCYx6C9jweJnTfw       提取码：BDAS 
-  * regnetx                        链接：https://pan.baidu.com/s/18kLAU_LHYsBwqFaQOPTW4A 提取码：BDAS 
-  * regnety                        链接：https://pan.baidu.com/s/1hi4-a_6jybU7yLuU-adRtw         提取码：BDAS 
-  * resnet                          链接：https://pan.baidu.com/s/1XUMGzhTLlfeJVk6Eurj4ZA        提取码：BDAS 
-  * shufflenetv2               链接：https://pan.baidu.com/s/1rgh6ERH_yCKYX5uWxTYtmA    提取码：BDAS 
-  * vgg                               链接：https://pan.baidu.com/s/1rHzyTWIsLWKXXalZ9jBJ9w        提取码：BDAS 
-  * xception                      链接：https://pan.baidu.com/s/1zuVklTdRGsP9NxRstQBHvg      提取码：BDAS
-  * vit                                 链接：https://pan.baidu.com/s/1NoYncqTWHNYdz3kpVuUy0w  提取码：BDAS 
+* 请注意，densenet需要运行tools/convert_weight_densenet.py进行转换权重。当然你也可以直接下载我转换后的权重。
+
+* 在utils/general.py中有加载权重的方式：取模型和权重的公共的键值对进行加载。因为这样可以基于你魔改之后的网络加载。
+
+  * densenet 链接：https://pan.baidu.com/s/1Lo-xSbR_9VpvfDJrXO31Fg  提取码：BDAS 
+  * efficientnetv1 链接：https://pan.baidu.com/s/1KDWtBzVn78C6xZrOBC9lkg  提取码：BDAS 
+  * efficientnetv2 链接：https://pan.baidu.com/s/1sLYyrRAeHd7XNo7l9pHQhg  提取码：BDAS 
+  * mobilenetv2 链接：https://pan.baidu.com/s/1YA5qgVN-PICEZXwhlwzOig  提取码：BDAS 
+  * mobilenetv3 链接：https://pan.baidu.com/s/1fijzykqVz5cvv8w_OZgR4w  提取码：BDAS 
+  * regnet 链接：https://pan.baidu.com/s/1WDfgFcmudzMOOceViRY1BQ  提取码：BDAS 
+  * ghostnet 链接：https://pan.baidu.com/s/1QByMVopEXgMsnNEIln9q5g  提取码：BDAS 
+  * resne(x)t 链接：https://pan.baidu.com/s/14rd042Ra6DhscNHqtEk38A  提取码：BDAS 
+  * shufflenetv2 链接：https://pan.baidu.com/s/1hMxjwOE02aDXL7nM6smFRw  提取码：BDAS 
+  * vgg 链接：https://pan.baidu.com/s/1HkY--EQJauwp-Cq1bKyd9w  提取码：BDAS 
+  * xception 链接：https://pan.baidu.com/s/19uo_dLENcuL1oFznLvl24A  提取码：BDAS 
+  * vit 链接：https://pan.baidu.com/s/15OTxNPDWkgdiuqZWSQ7sUw  提取码：BDAS 
+  * resmlp-mixer 链接：https://pan.baidu.com/s/1_qHcRdy65JatyHrHx5fReQ  提取码：BDAS 
+  * vovnet 链接：https://pan.baidu.com/s/1vaY-WOJdLwONiB_HYcpvpA  提取码：BDAS 
+  * se-resnet 链接：https://pan.baidu.com/s/1Zs4gs7MR3pm25Vilqo3yyA  提取码：BDAS 
+  * squeezenet 链接：https://pan.baidu.com/s/10NDqSJH4sgDZroGriTU3uQ  提取码：BDAS 
+  * mnasnet 链接：https://pan.baidu.com/s/1Vs3c-qU0IyQCs7BUpQ5HaA  提取码：BDAS 
 
 
 # 参考

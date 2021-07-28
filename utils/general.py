@@ -3,6 +3,7 @@ import glob
 from config import *
 from pathlib import Path
 import re
+import torch
 
 def create_config(log_dir, configurations=configurations):
     from ruamel.yaml import YAML
@@ -14,7 +15,16 @@ def create_config(log_dir, configurations=configurations):
 # with open("configs.yaml", "r", encoding="utf-8") as f:
 #     print(yaml.load(f.read(), Loader=yaml.Loader))
 
-
+def load_weight(net, load_from):
+    if os.path.exists(load_from):
+        pretrain_weights = torch.load(load_from)
+        public_keys = list(set(list(pretrain_weights.keys())) & set(list(net.state_dict().keys())))
+        # print(public_keys)
+        load_weights_dict = {k: pretrain_weights[k] for k in public_keys if net.state_dict()[k].numel()==pretrain_weights[k].numel()}
+        net.load_state_dict(load_weights_dict, strict=False)
+    else:
+        raise FileNotFoundError("[INFO] not found weights file: {}...".format(load_from))
+    return net
 
 def increment_path(path, exist_ok=False, sep='', mkdir=False):
     # Increment file or directory path, i.e. runs/exp --> runs/exp{sep}2, runs/exp{sep}3, ... etc.
