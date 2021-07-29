@@ -10,6 +10,10 @@
 
 ## 目前
 
+#### 2021. 7.29
+
+* 更新了tools中创建数据的工具
+
 #### 2021. 7.28
 
 * 增加了ResMlp-Mixer VoVNet se-resnet SqueezeNet MnasNet模型
