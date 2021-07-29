@@ -12,6 +12,7 @@
 
 #### 2021. 7.29
 
+* 纠正了环境配置
 * 更新了tools中创建数据的工具
 
 #### 2021. 7.28
@@ -100,23 +101,7 @@
 * VS2019
 * Cuda10.2
 
-### 配置cl.exe
-
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30037\bin\Hostx86\x64
-
-注意是vs2019  中间版本号可能不同 但是一定要Hostx86/x64的cl.exe
-
-把cl.exe路径添加到系统环境变量并移至最上层         cuda10.2的path高于10.1.10.0
-
-在cmd中输入
-
-	set Path=C
-	cl
-显示cl的版本号就无问题了。如19.14.29.30037
-
-在我的mmsegmentation环境安装教程中有对cl.exe配置的片段。https://www.bilibili.com/video/BV1NB4y1N7Qo
-
-### 安装apex
+### 安装apex (非必须，若不需要则config.py中use_apex=True)
 
 注意该步骤在Anaconda的**PowerSheel**中进行
 ```
