@@ -27,6 +27,10 @@
 
 - first commit
 
+## 待做
+
+* TensorRT加速
+* Swin-Transformer
 
 # 支持模型
 
@@ -111,13 +115,9 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 ```
 注意语句最后的点也要复制
 
-在我的yolox环境安装教程中有对cl.exe配置的片段。https://www.bilibili.com/video/BV1Gf4y157u8
-
 # 训练
 
 在config.py中修改你想要的模型配置，注意，我的代码中，**每个模型有2部分组成**，分别是model_prefix和model_suffix。
-
-为了方便大家，我写了关于参数用途的注释。
 
 例如
 
@@ -126,7 +126,7 @@ model_prefix='shufflenetv2'
 model_suffix='0.5'
 ```
 
-配置好之后运行train.py
+为了方便大家，我写了关于参数用途的注释。配置好之后运行train.py
 
 # 可视化相关指标
 
