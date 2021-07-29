@@ -111,7 +111,7 @@ conda create -n classify python=3.8
 conda activate classify
 conda install pytorch=1.8 torchvision cudatoolkit=10.2 -c pytorch
 ```
-### 安装apex (非必须，若不需要则config.py中use_apex=True)
+### 安装apex (非必须，若不需要则config.py中use_apex=False)
 
 注意该步骤在Anaconda的**PowerSheel**中进行
 ```
