@@ -6,6 +6,7 @@ from torchvision import transforms
 import matplotlib.pyplot as plt
 from config import configurations
 from models.create_models import create_model
+from utils.general import increment_path
 
 cfg = configurations['cfg']
 load_from = cfg['load_from']
@@ -19,8 +20,8 @@ device = cfg['device']
 model_prefix = cfg['model_prefix']
 model_suffix = cfg['model_suffix']
 log_root = cfg['log_root']
+class_indices_path = cfg['class_indices_path']
 model_name = model_prefix + '_' + model_suffix
-log_dir = os.path.join(log_root, model_name)
 
 data_transform = transforms.Compose([transforms.Resize((int(img_size[0]*1.2), int(img_size[0]*1.2))),
                                      transforms.CenterCrop(img_size),
@@ -37,7 +38,7 @@ img = data_transform(img)
 img = torch.unsqueeze(img, dim=0)
 
 # read class_indict
-json_path = os.path.join(log_dir, 'class_indices.json')
+json_path = class_indices_path
 assert os.path.exists(json_path), "file: '{}' dose not exist.".format(json_path)
 
 json_file = open(json_path, "r")

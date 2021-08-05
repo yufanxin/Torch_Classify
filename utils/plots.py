@@ -14,7 +14,7 @@ def plot_base(ax, epochs, y, color, title=None):
 
 def double_bar(num_train_class, num_val_class, classes, log_dir):
     width = 0.75  # the width of the bars: can also be len(x) sequence
-    fig, ax = plt.subplots(figsize=(len(classes), int(len(classes)//3*2)))
+    fig, ax = plt.subplots()
     ax.bar(classes, num_train_class, width, label='train')
     ax.bar(classes, num_val_class, width, bottom=num_train_class, label='val')
     ax.set_ylabel('Number')
@@ -51,7 +51,7 @@ def plot_txt(log_dir, num_classes, labels_name):
     ax[1, 0] = plot_base(ax[1, 0], epochs, recall, color='red', title='recall')
     ax[1, 1] = plot_base(ax[1, 1], epochs, F1, color='red', title='F1')
     fig.text(0.5, 0.04, 'Epoch', ha='center')
-    plt.savefig(os.path.join(log_dir, 'P-R-F1.jpg'), dpi=600, bbox_inches='tight')
+    plt.savefig(os.path.join(log_dir, 'Acc-P-R-F1.jpg'), dpi=600, bbox_inches='tight')
 
     fig, ax = plt.subplots(3, num_classes, figsize=(2 * num_classes, 2 * 3), sharex=True, sharey=True)
     for i in range(num_classes):
@@ -76,14 +76,22 @@ def plot_lr_scheduler(optimizer, scheduler, epochs, log_dir, scheduler_type):
     plt.figure()
     y = []
     for epoch in range(epochs):
-        optimizer.zero_grad()  # 优化器optimizer一遍，学习率也变一次
-        optimizer.step()
         y.append(optimizer.param_groups[0]['lr'])
         # print('epoch:', epoch, 'lr:', optimizer.param_groups[0]['lr'])
         scheduler.step()
     plt.plot(y, c='r', label='warmup step_lr', linewidth=1)
     plt.legend(loc='best')
-    plt.xticks(np.arange(0, epochs+20, 20))
+    # plt.xticks(np.arange(0, epochs+20, 20))
     if scheduler_type!='warmup_cosine_lr':
         plt.yscale("log")
     plt.savefig(os.path.join(log_dir, 'lr_scheduler.jpg'), dpi=600, bbox_inches='tight')
+
+def plot_loss(log_dir, train_loss_list, val_loss_list):
+    plt.figure()
+    plt.plot(train_loss_list, c='r', label='train loss', linewidth=2)
+    plt.plot(val_loss_list, c='b', label='val loss', linewidth=2)
+    plt.legend(loc='best')
+    plt.xlabel('epoch', fontsize=10)
+    plt.ylabel('loss', fontsize=10)
+    plt.yscale("log")
+    plt.savefig(os.path.join(log_dir, 'plot_loss.jpg'), dpi=600, bbox_inches='tight')

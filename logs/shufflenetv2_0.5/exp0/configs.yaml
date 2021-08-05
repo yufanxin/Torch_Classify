@@ -1,0 +1,42 @@
+cfg:
+  load_from: weights\shufflenetv2_weights\shufflenetv2_x0.5-f707e7126e.pth
+  model_prefix: shufflenetv2
+  model_suffix: '0.5'
+  img_path: data
+  predict_img_path: imgs\02500_4.jpg
+  class_indices_path: logs\shufflenetv2_0.5\exp1\class_indices.json
+  log_root: logs
+  mean:
+  - 0.485
+  - 0.456
+  - 0.406
+  std:
+  - 0.229
+  - 0.224
+  - 0.225
+  img_size:
+  - 128
+  - 128
+  num_classes: 3
+  batch_size: 512
+  epochs: 200
+  device: cuda:0
+  use_benchmark: true
+  num_workers: 0
+  warmup_epochs: 5
+  scheduler_type: warmup_cosine_lr
+  steps:
+  - 150
+  - 180
+  init_lr: 0.01
+  lr_scale: 0.01
+  drop_last: false
+  pin_memory: true
+  optimizer_type: sgd
+  use_apex: true
+  loss_type: CELoss
+  alpha:
+  - 1
+  - 2
+  - 2
+  gamma: 2

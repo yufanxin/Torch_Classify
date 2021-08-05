@@ -3,7 +3,7 @@ import math
 import torch.optim.lr_scheduler as lr_scheduler
 
 def get_lr(optimizer):
-        return optimizer.param_groups[0]["lr"]
+    return optimizer.param_groups[0]["lr"]
 
 def warmup_cosine_lr(epochs, lr_scale=0.0001, warmup_epochs=5):
     # Scheduler https://arxiv.org/pdf/1812.01187.pdf

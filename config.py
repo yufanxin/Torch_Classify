@@ -12,7 +12,7 @@
 # |--------------------------------------------------------------------------------------|
 # |regnety         |200mf 400mf 600mf 800mf 1.6gf 3.2gf 4.0gf 6.4gf 8.0gf 12gf 16gf 32gf |
 # |--------------------------------------------------------------------------------------|
-# |mobilenetv2     |0.25, 0.5, 0.75, 1.0, 1.25, 1.5                                      |
+# |mobilenetv2     |0.25 0.5 0.75 1.0 1.25 1.5                                           |
 # |--------------------------------------------------------------------------------------|
 # |mobilenetv3     |small large                                                          |
 # |--------------------------------------------------------------------------------------|
@@ -43,9 +43,9 @@
 
 configurations = {
     'cfg': dict(
-        load_from=r"weights\mnasnet_weights\mnasnet1.0_top1_73.512-f206786ef8.pth",  # pretrain weight of imagenet
-        model_prefix='mnasnet',  # above model_prefix
-        model_suffix='1.0',  # above model_suffix
+        load_from=r"weights\shufflenetv2_weights\shufflenetv2_x0.5-f707e7126e.pth",  # pretrain weight of imagenet
+        model_prefix='shufflenetv2',  # above model_prefix
+        model_suffix='0.5',  # above model_suffix
         img_path='data',  # the parent root where your train/val data are stored, not support test data
                           # -data
                           #    -train
@@ -57,27 +57,35 @@ configurations = {
                           #       -class_0
                           #       -class_1
                           #       -...
-        predict_img_path=r"imgs/02500_05.jpg",  # only use in predict.py
+        predict_img_path=r"imgs\02500_4.jpg",  # only use in predict.py
+        class_indices_path="logs\shufflenetv2_0.5\exp1\class_indices.json",  # only use in predict.py
         log_root='logs',  # the root to log your train/val status
         mean=[0.485, 0.456, 0.406],  # [0.485, 0.456, 0.406] if use pretrain weight of imagenet else [0.5, 0.5, 0.5]
         std=[0.229, 0.224, 0.225],  # [0.229, 0.224, 0.225] if use pretrain weight of imagenet else [0.5, 0.5, 0.5]
-        img_size=[224, 224],  # especially for efficientnetv1 b0->224, b1->240, b2->260, b3->300, b4->380, b5->456, b6->528, b7->600
+        img_size=[128, 128],  # especially for efficientnetv1 b0->224, b1->240, b2->260, b3->300, b4->380, b5->456, b6->528, b7->600
                               # especially for xception 299
-        num_classes=10,
-        batch_size=64,
+                              # especially for vit 224
+                              # especially for resmlp-mixer 224
+        num_classes=3,
+        batch_size=512,
         epochs=200,
         device="cuda:0",  #  now only support single gpu or cpu, ['cuda:0', 'cpu']
-        use_benchmark=False,  # use to speed up if your img_size doesn't change dynamically
+        use_benchmark=True,  # use to speed up if your img_size doesn't change dynamically
         num_workers=0,  # 0 if run on windows else depend on cpu
-        init_lr=0.01,
         warmup_epochs=5,  # linear warm up 5 epoch
-        scheduler_type='warmup_step_lr',  # support: ['warmup_cosine_lr', 'warmup_step_lr'] more details in utils/scheduler.py
-        steps=[100, 150, 180],  # use steps if scheduler_type=='warmup_step_lr' else ignore, default mutiply 0.1 when epoch == step
+        scheduler_type='warmup_cosine_lr',  # support: ['warmup_cosine_lr', 'warmup_step_lr'] more details in utils/scheduler.py
+        steps=[150, 180],  # use steps if scheduler_type=='warmup_step_lr' else ignore, default mutiply 0.1 when epoch == step
+        init_lr=0.01,
         lr_scale=0.01,  # use lr_scale if scheduler_type=='warmup_cosine_lr' else ignore, cosine_lr: init_lr -> init_lr*lr_scale
         drop_last=False,  # whether drop the last batch to ensure consistent batch_norm statistics
         pin_memory=True,  # True if you memory big enough else False
         optimizer_type='sgd',  # support: ['sgd', 'adam', 'adamw', 'rmsprop'] more details in utils/optimizer.py
-        loss_type='CELoss',  # support: ['CELoss', 'LabelSmoothCELoss'] more details in utils/loss.py
-        use_apex=False  # use apex to train by mixed-precision
+        use_apex=True,  # use apex to train by mixed-precision
+        loss_type='CELoss',  # support: ['CELoss', 'LabelSmoothCELoss', 'FocalLoss'] more details in utils/loss.py
+        # especially alpha/gamma for FocalLoss
+        alpha=[1, 2, 2],  # When α is a list, it is the weight of each category usually using in classify
+                          # When α is constant, the category weight is [α, 1-α, 1-α, ...] usually using in object detection
+        gamma=2  # retainnet set it to 2
+
     ),
 }

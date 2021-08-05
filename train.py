@@ -1,3 +1,4 @@
+import collections
 import json
 import time
 
@@ -13,7 +14,7 @@ from torch.utils.tensorboard import SummaryWriter
 import torch.optim.lr_scheduler as lr_scheduler
 from utils.scheduler import get_lr, create_scheduler
 from utils.optimizer import create_optimizer
-from utils.plots import plot_datasets, plot_txt, plot_lr_scheduler
+from utils.plots import plot_datasets, plot_txt, plot_lr_scheduler, plot_loss
 from utils.loss import create_loss
 from utils.general import create_config, increment_path, load_weight
 from config import configurations
@@ -43,6 +44,8 @@ log_root = cfg['log_root']
 steps = cfg['steps']
 warmup_epochs = cfg['warmup_epochs']
 loss_type = cfg['loss_type']
+alpha = cfg['alpha']
+gamma = cfg['gamma']
 use_apex = cfg['use_apex']
 model_name = model_prefix + '_' + model_suffix
 log_dir = increment_path(os.path.join(log_root, model_name, 'exp'))
@@ -60,7 +63,7 @@ print('[INFO] Using Model:{} Epoch:{} BatchSize:{} LossType:{} '
                                                     loss_type, optimizer_type, scheduler_type))
 print('[INFO] Logs will be saved in {}...'.format(log_dir))
 
-class_index = ' '.join([str(i) for i in np.arange(num_classes)])
+class_index = ' '.join(['%7s'%(str(i)) for i in np.arange(num_classes)])
 with open(results_file, 'w') as f:
     f.write('epoch ' + 'accuracy ' + 'precision ' + 'recall ' + 'F1-score ' + \
             class_index + ' ' + class_index + ' ' + class_index)
@@ -107,17 +110,23 @@ if load_from != "":
     print('[INFO] Load Weight From {}...'.format(load_from))
     net = load_weight(net, load_from)
 print('[INFO] Successfully Load Weight From {}...'.format(load_from))
-loss_function = create_loss(loss_type)
+loss_function = create_loss(loss_type, alpha=alpha,
+                            gamma=gamma, num_classes=num_classes)
 
 optimizer = create_optimizer(optimizer_type, net, init_lr)
+scheduler = create_scheduler(scheduler_type, optimizer, epochs, lr_scale, steps, warmup_epochs)
+plot_lr_scheduler(optimizer, scheduler, epochs, log_dir, scheduler_type)
+# scheduler.last_epoch = -1
+# scheduler.step()
 if use_apex:
     from apex import amp
     net, optimizer = amp.initialize(net, optimizer, opt_level='O1')
     print('[INFO] Using Mixed-precision to train...')
-scheduler = create_scheduler(scheduler_type, optimizer, epochs, lr_scale, steps, warmup_epochs)
-plot_lr_scheduler(optimizer, scheduler, epochs, log_dir, scheduler_type)
 best_acc = 0.0
 train_steps = len(train_loader)
+val_steps = len(validate_loader)
+train_loss_list = []
+val_loss_list = []
 print('[INFO] Start Training...')
 
 for epoch in range(epochs):
@@ -134,35 +143,42 @@ for epoch in range(epochs):
                 scaled_loss.backward()
         else:
             loss.backward()
+        # print statistics
+        train_per_epoch_loss += loss.item()
+        train_bar.desc = "train epoch[{}/{}] train_loss:{:.3f} lr:{:.6f}".format(epoch + 1, epochs, loss, get_lr(optimizer))
         optimizer.step()
 
-        # print statistics
-        train_per_epoch_loss += scaled_loss.item() if use_apex else loss.item()
-        train_bar.desc = "train epoch[{}/{}] loss:{:.3f} lr:{:.6f}".format(epoch + 1, epochs, loss, get_lr(optimizer))
-
     train_per_epoch_loss = train_per_epoch_loss / train_steps
+    train_loss_list.append(train_per_epoch_loss)
 
-    # print('=' * 60)
     # validate
     net.eval()
+    val_per_epoch_loss = 0.0
     confusion = ConfusionMatrix(num_classes=num_classes)
     with torch.no_grad():
         val_bar = tqdm(validate_loader)
         for val_data in val_bar:
             val_images, val_labels = val_data
             outputs = net(val_images.to(device))
+            val_loss = loss_function(outputs, val_labels.to(device))
             predict_y = torch.max(outputs, dim=1)[1]
-            # acc += torch.eq(predict_y, val_labels.to(device)).sum().item()
             confusion.update(val_labels, outputs, predict_y)
             confusion.acc_p_r_f1()
-            val_bar.desc = "val epoch[{}/{}] Acc: {:.3f} P: {:.3f} R: {:.3f} F1: {:.3f}".format(epoch + 1, epochs,
-                                                                                                confusion.mean_val_accuracy,
-                                                                                                confusion.mean_precision,
-                                                                                                confusion.mean_recall,
-                                                                                                confusion.mean_F1)
+            val_per_epoch_loss += val_loss.item()
+            val_bar.desc = 'val epoch[{}/{}] val_loss:{:.3f} Acc: {:.3f} '\
+                           'P: {:.3f} R: {:.3f} F1: {:.3f}'.format(epoch + 1, epochs,
+                                                                   val_loss,
+                                                                   confusion.mean_val_accuracy,
+                                                                   confusion.mean_precision,
+                                                                   confusion.mean_recall,
+                                                                   confusion.mean_F1)
+        val_per_epoch_loss = val_per_epoch_loss / val_steps
+        val_loss_list.append(val_per_epoch_loss)
+
     scheduler.step()
 
     tb_writer.add_scalar('train_loss', train_per_epoch_loss, epoch + 1)
+    tb_writer.add_scalar('val_loss', val_per_epoch_loss, epoch + 1)
     tb_writer.add_scalar('val_accuracy', confusion.mean_val_accuracy, epoch + 1)
     tb_writer.add_scalar('val_precision', confusion.mean_precision, epoch + 1)
     tb_writer.add_scalar('val_recall', confusion.mean_recall, epoch + 1)
@@ -176,5 +192,6 @@ for epoch in range(epochs):
 
 torch.save(net.state_dict(), log_dir + '/last.pth')
 plot_txt(log_dir, num_classes, labels_name)
+plot_loss(log_dir, train_loss_list, val_loss_list)
 print('[INFO] Results will be saved in {}...'.format(log_dir))
 print('[INFO] Finished Training...')

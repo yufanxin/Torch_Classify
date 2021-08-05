@@ -12,7 +12,7 @@ model_suffix = cfg['model_suffix']
 model_name = model_prefix + '_' + model_suffix
 
 # create model
-net = create_model(model_name=model_name, num_classes=num_classes).to(device)
+net = create_model(model_name=model_name, num_classes=num_classes)
 model = net
 model.to(device)
 dummy_input = torch.randn(1, 3, img_size[0], img_size[1], dtype=torch.float).to(device)

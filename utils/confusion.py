@@ -32,25 +32,25 @@ class ConfusionMatrix():
         self.F1 = 2 * self.recall * self.precision / (self.recall + self.precision)
         self.accuracy = self.acc_num.sum(1) / self.target_num.sum(1)
         # 精度调整
-        self.recall = np.nan_to_num((self.recall.numpy()[0] * 100)).round(3)
-        self.precision = np.nan_to_num((self.precision.numpy()[0] * 100)).round(3)
-        self.F1 = np.nan_to_num((self.F1.numpy()[0] * 100)).round(3)
-        self.val_accuracy = np.nan_to_num((self.accuracy.numpy()[0] * 100)).round(3)
+        self.recall = np.nan_to_num((self.recall.numpy()[0] * 100))
+        self.precision = np.nan_to_num((self.precision.numpy()[0] * 100))
+        self.F1 = np.nan_to_num((self.F1.numpy()[0] * 100))
+        self.val_accuracy = np.nan_to_num((self.accuracy.numpy()[0] * 100))
 
-        self.mean_val_accuracy = self.val_accuracy.mean().round(3)
-        self.mean_precision = self.precision.mean().round(3)
-        self.mean_recall = self.recall.mean().round(3)
-        self.mean_F1 = self.F1.mean().round(3)
+        self.mean_val_accuracy = self.val_accuracy.mean()
+        self.mean_precision = self.precision.mean()
+        self.mean_recall = self.recall.mean()
+        self.mean_F1 = self.F1.mean()
 
         # return val_accuracy.mean(), precision.mean(), recall.mean(), F1.mean()
 
     def save(self, results_file, epoch):
-        self.precision = [str(i) for i in self.precision]
-        self.recall = [str(i) for i in self.recall]
-        self.F1 = [str(i) for i in self.F1]
+        self.precision = ['%7.3f'%i for i in self.precision]
+        self.recall = ['%7.3f'%i for i in self.recall]
+        self.F1 = ['%7.3f'%i for i in self.F1]
         with open(results_file, 'a') as f:
-            f.write('\n%5d'%epoch+' '+'%8s'%str(self.mean_val_accuracy)+' '+'%9s'%str(self.mean_precision)+' '+'%6s'%str(self.mean_recall)+' '\
-                    +'%8s'%str(self.mean_F1)+' '+' '.join(self.precision)+' '+' '.join(self.recall)+' '+' '.join(self.F1))  # P, R, mAP@.5, mAP@.5-.95, val_loss(box, obj, cls)
+            f.write('\n%5d'%epoch+' '+'%8.3f'%self.mean_val_accuracy+' '+'%9.3f'%self.mean_precision+' '+'%6.3f'%self.mean_recall+' '\
+                    +'%8.3f'%self.mean_F1+' '+' '.join(self.precision)+' '+' '.join(self.recall)+' '+' '.join(self.F1))
         # 打印格式方便复制
         # print('recall', " ".join('%s' % id for id in recall))
         # print('precision', " ".join('%s' % id for id in precision))

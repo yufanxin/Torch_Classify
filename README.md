@@ -2,7 +2,7 @@
 
 ## 前言
 
-起因：因为我看github上面很多其他计算机视觉任务的集成，都写得很好了，但是分类这块，一直没找到我想要的那种清楚点的，每次要用的时候都很烦，索性自己整理了一个符合自己需求的。以后也会陆续添加模型。
+起因：因为我看github上面很多其他计算机视觉任务的集成，都写得很好了，但是分类这块，一直没找到我想要的那种，索性自己整理了一个符合自己需求的。以后也会陆续添加模型。
 
 * 本教程是对本人本科生期间的研究内容进行整理总结，总结的同时也希望能够帮助更多的小伙伴。后期如果有学习到新的知识也会与大家一起分享。
 * 本教程使用Pytorch进行网络的搭建与训练。
@@ -10,20 +10,29 @@
 
 ## 目前
 
-#### 2021. 7.29
+#### 2021.08.05
 
 * 纠正了环境配置
-* 更新了tools中创建数据的工具
+* 增加了Focal Loss
+* 增加了tools中可视化的工具
+* 优化了记录每次exp的result及plot
+* 修复了predict.py读取class_indices.json的BUG
+* 修复了adamw优化器和plot_lr冲突的BUG
 
-#### 2021. 7.28
+#### 2021.07.29
+
+* 纠正了环境配置
+* 增加了tools中创建数据的工具
+
+#### 2021.07.28
 
 * 增加了ResMlp-Mixer VoVNet se-resnet SqueezeNet MnasNet模型
+* 增加了tools中转换权重、计算模型参数、模型FPS、模型吞吐量的工具
+* 更新了权重加载方式和权重链接
 * 优化了logs文件夹，记录每次exp的config，添加requirements.txt并纠正环境配置
 * 修复了warmup_epoch=0的BUG
-* 更新了tools中转换权重、计算模型参数、模型FPS、模型吞吐量的工具
-* 更新了权重加载方式和权重链接
 
-#### 2021.7.25
+#### 2021.07.25
 
 - first commit
 
@@ -113,7 +122,6 @@ conda install pytorch=1.8 torchvision cudatoolkit=10.2 -c pytorch
 ```
 ### 安装apex (非必须，若不需要则config.py中use_apex=False)
 
-注意该步骤在Anaconda的**PowerSheel**中进行
 ```
 cd apex-master
 pip install -r requirements.txt
@@ -178,10 +186,9 @@ model_suffix='0.5'
 # 参考
 
 1. https://github.com/pytorch/vision/tree/master/torchvision/models
-
 2. https://github.com/WZMIAOMIAO/deep-learning-for-image-processing/tree/master/pytorch_classification
-
 3. https://github.com/rwightman/pytorch-image-models/tree/master/timm/models
+4. https://github.com/yizt/Grad-CAM.pytorch
 
 
 # 联系方式
