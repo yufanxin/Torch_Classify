@@ -146,9 +146,9 @@ model_suffix='0.5'
 
 训练完成之后在你的log_dir中查看训练过程。
 
-<img src=".\logs\mobilenetv3_small\exp0\P-R-F1-per-class.jpg" width="700"/>
-<img src=".\logs\mobilenetv3_small\exp0\P-R-F1.jpg" width="700"/>
-<img src=".\logs\mobilenetv3_small\exp0\data_distribution.jpg" width="700" />
+<img src=".\logs\shufflenetv2_0.5\exp0\P-R-F1-per-class.jpg" width="700"/>
+<img src=".\logs\shufflenetv2_0.5\exp0\Acc-P-R-F1.jpg" width="700"/>
+<img src=".\logs\shufflenetv2_0.5\exp0\data_distribution.jpg" width="700" />
 
 # 预测
 
